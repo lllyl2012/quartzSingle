@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<bean id="dateMessage" class="com.yl.Job1"></bean>
+	<bean name="myJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="dateMessage"/>
+		<property name="targetMethod" value="execute"/>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="simpleTriggerFactoryBean" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="myJob"/>
+		<property name="startDelay" value="0"/>
+ 		<property name="repeatInterval" value="2000"/>
+		<property name="repeatCount" value="10"/>
+	</bean>
+	
+	<bean id="cronTriggerFactoryBean" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> 
+ 		<property name="jobDetail" ref="myJob"></property> 
+		<property name="cronExpression" value="0/3 * * * * ?"/> 
+ 	</bean> 
+	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="simpleTriggerFactoryBean"/>
+  				<ref bean="cronTriggerFactoryBean"/>  
+			</list>
+		</property>
+	</bean>
+</beans>
